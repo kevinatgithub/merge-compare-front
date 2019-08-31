@@ -1,44 +1,14 @@
 <?php
 // header("Access-Control-Allow-Origin: *");
-define("DB1","tmc");
-define("DB2","v2");
+define("DB1","imusync");
 
 $con1 = mysqli_connect("localhost","root");
 mysqli_select_db($con1,DB1);
 
-$con2 = mysqli_connect("localhost","root");
-mysqli_select_db($con2,DB2);
-
 $excluded_fields = ['donor_photo','lfinger','rfinger'];
 
 $tables = [
-    "bloodproc" => "bloodproc_no",
-    "bloodtest" => "bloodtest_no",
-    "blood_label" => "label_no",
-    "blood_typing" => "bloodtyping_no",
-    "bts_blood_request" => "seqno",
-    "bts_blood_request_dtls" => "id",
-    "bts_other_source" => "seqno",
-    "bts_patient" => "seqno",
-    "bts_physician" => "seqno",
-    "bts_reactions" => "request_dtl_id",
-    // // "component" => "donation_id",
-    // "donation_schedules" => "sched_id",
-    // "donor" => "seqno",
-    // // "donor_log" => "id",
-    // // "r3_admin" => "user_id",
-    // // "r3_config" => "facility_cd",
-    // // "r3_request" => "ticket_no",
-    // // "r3_request" => "ticket_no",
-    // // "r_bts_facility_config" => "facility_cd",
-    // // "r_bts_transfusion_reaction" => "reaction_id",
-    // // "r_code" => "code",
-    // // "r_codedtl" => "id",
-    // // "r_component" => "component_cd",
-    // // "r_component_duration" => "duration_id",
-    // "r_donor_agency" => "agency_cd",
-    // "r_facility" => "facility_cd",
-    // "r_user" => "user_id",
+    "donor" => "seqno",
 ];
 
 $response = [];
@@ -100,7 +70,7 @@ function fieldsRemoveExclusion($table,$prefix){
 function getConflicts($name,$key){
     global $con1;
 
-    $query = "SELECT ".fieldsRemoveExclusion($name,"t1.")." FROM ".DB1.".$name t1 INNER JOIN ".DB2.".$name t2 ON t1.$key = t2.$key LIMIT 1000";
+    $query = "SELECT ".fieldsRemoveExclusion($name,"t1.")." FROM ".DB1.".".$name."1 t1 INNER JOIN ".DB1.".".$name."2 t2 ON t1.$key = t2.$key WHERE t1.seqno = '1100120140009719' ORDER BY seqno LIMIT 100";
     // $query = "SELECT count(*) FROM ".DB1.".$name t1 INNER JOIN ".DB2.".$name t2 ON t1.$key = t2.$key";
     // exit($query);
 
@@ -117,16 +87,16 @@ function getConflicts($name,$key){
 
 function getCounterparts($ids,$name,$key){
 
-    global $con2;
+    global $con1;
 
-    $query = "SELECT ".fieldsRemoveExclusion($name,"")." FROM $name WHERE $key IN (?)";
+    $query = "SELECT ".fieldsRemoveExclusion($name,"")." FROM ".$name."2 WHERE $key IN (?)";
 
     $ids_str = implode($ids,"','");
     $ids_str = "'".$ids_str."'";
 
     $query = str_replace("?",$ids_str,$query);
 
-    $run = mysqli_query($con2,$query);
+    $run = mysqli_query($con1,$query);
 
     $data = [];
 
