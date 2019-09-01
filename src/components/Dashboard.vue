@@ -54,7 +54,7 @@ export default{
         }
     },
     async mounted(){
-        let request = await this.$http.get("http://10.100.100.12/diffchecker/public/compare/test2.php");
+        let request = await this.$http.get("http://192.168.43.98/merge-compare-front/public/compare/test2.php");
         this.results = request.data;
     },
     computed : {

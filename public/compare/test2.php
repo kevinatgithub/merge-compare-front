@@ -1,6 +1,6 @@
 <?php
 // header("Access-Control-Allow-Origin: *");
-define("DB1","imusync");
+define("DB1","pbc");
 
 $con1 = mysqli_connect("localhost","root");
 mysqli_select_db($con1,DB1);
@@ -50,7 +50,7 @@ function fieldsRemoveExclusion($table,$prefix){
     global $excluded_fields;
     global $con1;
     // $query = "SELECT REPLACE(GROUP_CONCAT(COLUMN_NAME), '".implode($excluded_fields,',')."', '') as 'columns' FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table' AND TABLE_SCHEMA = 'tmc'";
-    $query = "SELECT GROUP_CONCAT(COLUMN_NAME) as 'columns' FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table' AND TABLE_SCHEMA = '".DB1."'";
+    $query = "SELECT GROUP_CONCAT(COLUMN_NAME) as 'columns' FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '".$table."' AND TABLE_SCHEMA = '".DB1."'";
     // exit($query);
     $run = mysqli_query($con1,$query) or exit(mysqli_error($con1));
     $result = mysqli_fetch_object($run)->columns;
@@ -70,11 +70,11 @@ function fieldsRemoveExclusion($table,$prefix){
 function getConflicts($name,$key){
     global $con1;
 
-    $query = "SELECT ".fieldsRemoveExclusion($name,"t1.")." FROM ".DB1.".".$name."1 t1 INNER JOIN ".DB1.".".$name."2 t2 ON t1.$key = t2.$key WHERE t1.seqno = '1100120140009719' ORDER BY seqno LIMIT 100";
+    $query = "SELECT ".fieldsRemoveExclusion($name,"t1.")." FROM ".DB1.".".$name." t1 INNER JOIN ".DB1.".".$name."2 t2 ON t1.$key = t2.$key ORDER BY seqno LIMIT 100";
     // $query = "SELECT count(*) FROM ".DB1.".$name t1 INNER JOIN ".DB2.".$name t2 ON t1.$key = t2.$key";
     // exit($query);
 
-    $run = mysqli_query($con1,$query);
+    $run = mysqli_query($con1,$query) or exit(mysqli_error($con1));
 
     $data = [];
 
